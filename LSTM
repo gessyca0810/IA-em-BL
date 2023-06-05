@@ -1,0 +1,142 @@
+# Código de Long Short-Term Memory (LSTM) -> possuem células de memória que podem armazenar informações por longos
+# períodos de tempo
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from ker as.models import Sequential
+from keras.layers import LSTM, Dense
+
+# Carregar os dados do arquivo Excel
+dados1 = pd.read_excel('teste.xlsx')  # primeiro conjunto de dados
+dados2 = pd.read_excel('teste.xlsx', sheet_name=1)  # segundo conjunto de dados
+dados3 = pd.read_excel('teste.xlsx', sheet_name=2)  # terceiro conjunto de dados
+dados4 = pd.read_excel('teste.xlsx', sheet_name=3)  # quarto conjunto de dados
+
+# as linhas com valores nulos ficam como 0 na coluna "latencia"
+dados1['latencia'] = dados1['latencia'].fillna(0)
+
+# Selecionar a coluna 'Abrir OS' do primeiro conjunto de dados, para ser a saída
+y1 = dados1['abrir os']
+
+# Selecionar a coluna latência como entrada
+X1 = dados1['latencia']
+
+# Substituir os valores menores que 17 por 0 e os maiores ou iguais a 17 por 1
+X1 = np.where(X1 < 17, 0, 1)
+
+# as linhas com valores nulos ficam como 0 na coluna "jitter"
+dados2['jitter'] = dados2['jitter'].fillna(0)
+
+# Selecionar a coluna 'Abrir OS' do segundo conjunto de dados, para ser a saída
+y2 = dados2['abrir os']
+
+# Selecionar a coluna jitter como entrada
+X2 = dados2['jitter']
+
+# Substituir os valores menores que 5 por 0 e os maiores ou iguais a 5 por 1
+X2 = np.where(X2 < 5, 0, 1)
+
+# as linhas com valores nulos ficam como 0 na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].fillna(0)
+
+# Substituir ',' por '.' e '%' por '' na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].str.replace(',', '.').str.replace('%', '')
+
+# Substituir valores não numéricos por 0 na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].replace([np.inf, -np.inf, np.nan], 0)
+
+# Converter a coluna para tipo numérico (float) antes de converter para inteiros
+dados3['perda_de_pacote'] = (dados3['perda_de_pacote'].astype(float) * 10000).astype(int)
+
+# Selecionar a coluna 'Abrir OS' do terceiro conjunto de dados, para ser a saída
+y3 = dados3['abrir os']
+
+# Selecionar a coluna perda_de_pacote como entrada
+X3 = dados3['perda_de_pacote']
+
+# Substituir os valores menores que 3 por 0 e os maiores ou iguais a 3 por 1
+X3 = np.where(X3 < 3, 0, 1)
+
+# as linhas com valores nulos ficam como 0 na coluna "reboots"
+dados4['reboots'] = dados4['reboots'].fillna(0)
+
+# Selecionar a coluna 'Abrir OS' do quarto conjunto de dados, para ser a saída
+y4 = dados4['abrir os']
+
+# Selecionar a coluna reboots como entrada
+X4 = dados4['reboots']
+
+# Substituir os valores menores que 3 por 0 e os maiores ou iguais a 3 por 1
+X4 = np.where(X4 < 3, 0, 1)
+
+# Obtém a quantidade de linhas em cada coluna
+qtd_linhas_latencia = X1.shape[0]
+qtd_linhas_jitter = X2.shape[0]
+qtd_linhas_perda_de_pacote = X3.shape[0]
+qtd_linhas_reboots = X4.shape[0]
+
+# Verifica se alguma coluna tem mais linhas que as outras
+max_linhas = max(qtd_linhas_latencia, qtd_linhas_jitter, qtd_linhas_perda_de_pacote, qtd_linhas_reboots)
+    
+if qtd_linhas_latencia < max_linhas:
+    # Adiciona 0 às linhas restantes na latencia
+    X1 = np.append(X1, np.zeros(max_linhas - qtd_linhas_latencia))
+
+if qtd_linhas_jitter < max_linhas:
+    # Adiciona 0 às linhas restantes no jitter
+    X2 = np.append(X2, np.zeros(max_linhas - qtd_linhas_jitter))
+
+if qtd_linhas_perda_de_pacote < max_linhas:
+    # Adiciona 0 às linhas restantes na perda_de_pacote
+    X3 = np.append(X3, np.zeros(max_linhas - qtd_linhas_perda_de_pacote))
+        
+if qtd_linhas_reboots < max_linhas:
+    # Adiciona 0 às linhas restantes na perda_de_pacote
+    X4 = np.append(X4, np.zeros(max_linhas - qtd_linhas_reboots))
+    
+# Concatenar os conjuntos de dados lado a lado
+X = np.column_stack((X1, X2, X3, X4))
+
+# Dividir os dados em 70% treinamento e 30% teste
+X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Padronizar os dados para que tenha média zero e desvio padrão igual a 1 é feito subtraindo-se a média de cada variável
+# e dividindo pelo desvio padrão
+scaler = StandardScaler()
+X_treino = scaler.fit_transform(X_treino) #ajustar dados de treinamento
+X_teste = scaler.transform(X_teste) 
+# transormar dados testes  a transformação é aplicada aos dados de teste, sem recalcular as estatísticas (média e desvio padrão).
+# A média e o desvio padrão usados para a transformação são os mesmos calculados anteriormente nos dados de treinamento. 
+# Isso garante que os dados de teste sejam transformados de acordo com a mesma escala dos dados de treinamento.
+# Ao padronizar os dados de entrada, busca-se garantir que todas as variáveis tenham a mesma escala, evitando que alguma variável 
+# tenha um impacto desproporcional sobre o modelo. A padronização também pode ajudar na convergência mais rápida durante o 
+# treinamento do modelo e na interpretação dos coeficientes das variáveis.
+
+# Redimensionar os dados de entrada para serem compatíveis com LSTMs Os dados são redimensionados para serem compatíveis 
+# com a entrada esperada pela camada LSTM, adicionando uma dimensão extra.
+# A estrutura tem 3 dimensões: 
+# (número de amostras, sequência de observações ao longo do tempo, número de características ou variáveis em cada observação)
+X_treino = X_treino.reshape(X_treino.shape[0], 1, X_treino.shape[1]) 
+X_teste = X_teste.reshape(X_teste.shape[0], 1, X_teste.shape[1])
+
+# Criar o modelo LSTM
+modelo = Sequential() #camadas são empilhadas uma em cima da outra.
+modelo.add(LSTM(10, input_shape=(1, X.shape[1]))) #adicionar camadas ao modelo sequencial. 
+                                                  #(número de unidades, forma de entrada(comprimento, número de características))
+modelo.add(Dense(1, activation='sigmoid')) #adicionar uma camada densa ao modelo possui uma única unidade de saída e usa a 
+                                           #função de ativação sigmoidal. Realiza a classificação final com base nas informações
+                                           #extraídas pela camada LSTM.
+
+# Compilar o modelo
+modelo.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+#(perda utilizada no treinamento, atualiza os pesos com base na função de perda, metricas usadas para avaliar o desempenho)
+
+# Treinar o modelo com os dados de treinamento com 10 épocas 
+modelo.fit(X_treino, y_treino, epochs=10, batch_size=32)
+
+# Avaliar o modelo com os dados de teste
+_, precisao = modelo.evaluate(X_teste, y_teste)
+
+# Imprimir a precisão do modelo
+print('Precisão:', precisao * 100, '%')
