@@ -1,0 +1,183 @@
+import pandas as pd #manipular e analisar dados
+import numpy as np #calculos numéricos
+from sklearn.tree import DecisionTreeClassifier #aprendizado de máquinas tradicional: árvore de decisão para problemas de classificação.
+from sklearn.model_selection import train_test_split # Função para dividir um conjunto de dados em conjuntos de treinamento e teste.
+from sklearn.preprocessing import StandardScaler #Classe que implementa a padronização dos dados, ou seja, a transformação dos dados para terem média zero e desvio padrão 1.
+from keras.models import Sequential #treinamento de redes neurais profundo: Classe que permite criar um modelo sequencial, onde as camadas são empilhadas uma após a outra.
+from keras.layers import Dense #Camada totalmente conectada, onde cada neurônio está conectado a todos os neurônios da camada anterior.
+
+# Carregar os dados do arquivo Excel
+dados1 = pd.read_excel('teste.xlsx')  # primeiro conjunto de dados
+dados2 = pd.read_excel('teste.xlsx', sheet_name=1)  # segundo conjunto de dados
+dados3 = pd.read_excel('teste.xlsx', sheet_name=2)  # terceiro conjunto de dados
+dados4 = pd.read_excel('teste.xlsx', sheet_name=3)  # quarto conjunto de dados
+dados5 = pd.read_excel('teste.xlsx', sheet_name=4)  # quinto conjunto de dados
+dados6 = pd.read_excel('teste.xlsx', sheet_name=5)  # sexto conjunto de dados
+dados7 = pd.read_excel('teste.xlsx', sheet_name=6)  # sétimo conjunto de dados
+
+# as linhas com valores nulos ficam como 0 na coluna "latencia"
+dados1['latencia'] = dados1['latencia'].fillna(0)
+
+# Selecionar a coluna 'Abrir OS' do primeiro conjunto de dados, para ser a saída
+y1 = dados1['abrir os']
+
+# Selecionar a coluna latência como entrada
+X1 = dados1['latencia']
+
+# as linhas com valores nulos ficam como 0 na coluna "jitter"
+dados2['jitter'] = dados2['jitter'].fillna(0)
+
+# Selecionar a coluna 'Abrir OS' do segundo conjunto de dados, para ser a saída
+y2 = dados2['abrir os']
+
+# Selecionar a coluna jitter como entrada
+X2 = dados2['jitter']
+
+# as linhas com valores nulos ficam como 0 na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].fillna(0)
+
+# Substituir '%' por '' na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].replace('%', '')
+
+# Converter a coluna para tipo numérico (float) antes de converter para inteiros
+#dados3['perda_de_pacote'] = (dados3['perda_de_pacote'].astype(float) * 10000).astype(int)
+
+# Selecionar a coluna 'Abrir OS' do terceiro conjunto de dados, para ser a saída
+y3 = dados3['abrir os']
+
+# Selecionar a coluna perda_de_pacote como entrada
+X3 = dados3['perda_de_pacote']
+
+# as linhas com valores nulos ficam como 0 na coluna "reboots"
+dados4['reboots'] = dados4['reboots'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y4 = dados4['abrir os']
+
+# seleciona a coluna reboots como entrada
+X4 = dados4['reboots']
+
+# as linhas com valores nulos ficam como 0 na coluna "channel2_quality"
+dados5['channel2_quality'] = dados5['channel2_quality'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y5 = dados5['abrir os']
+
+# seleciona a coluna channel2_quality como entrada
+X5 = dados5['channel2_quality']
+
+# as linhas com valores nulos ficam como 0 na coluna "channel5_quality"
+dados6['channel5_quality'] = dados6['channel5_quality'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y6 = dados6['abrir os']
+
+# seleciona a coluna channel5_quality como entrada
+X6 = dados6['channel5_quality']
+
+# as linhas com valores nulos ficam como 0 na coluna "n_distant_devices"
+dados7['n_distant_devices'] = dados7['n_distant_devices'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y7 = dados7['abrir os']
+
+# seleciona a coluna n_distant_devices como entrada
+X7 = dados7['n_distant_devices']
+
+# Obtém a quantidade de linhas em cada coluna
+qtd_linhas_latencia = X1.shape[0]
+qtd_linhas_jitter = X2.shape[0]
+qtd_linhas_perda_de_pacote = X3.shape[0]
+qtd_linhas_reboots = X4.shape[0]
+qtd_linhas_channel2_quality = X5.shape[0]
+qtd_linhas_channel5_quality = X6.shape[0]
+qtd_linhas_n_distant_devices = X7.shape[0]
+
+# Verifica se alguma coluna tem mais linhas que as outras
+max_linhas = max(qtd_linhas_latencia, qtd_linhas_jitter, qtd_linhas_perda_de_pacote, qtd_linhas_reboots, qtd_linhas_channel2_quality, qtd_linhas_channel5_quality, qtd_linhas_n_distant_devices)
+
+if qtd_linhas_latencia < max_linhas:
+    # Adiciona 0 às linhas restantes na latencia
+    X1 = np.append(X1, np.zeros(max_linhas - qtd_linhas_latencia))
+
+if qtd_linhas_jitter < max_linhas:
+    # Adiciona 0 às linhas restantes no jitter
+    X2 = np.append(X2, np.zeros(max_linhas - qtd_linhas_jitter))
+
+if qtd_linhas_perda_de_pacote < max_linhas:
+    # Adiciona 0 às linhas restantes na perda_de_pacote
+    X3 = np.append(X3, np.zeros(max_linhas - qtd_linhas_perda_de_pacote))
+
+if qtd_linhas_reboots < max_linhas:
+    # Adiciona 0 às linhas restantes no reboots
+    X4 = np.append(X4, np.zeros(max_linhas - qtd_linhas_reboots))
+    
+if qtd_linhas_channel2_quality < max_linhas:
+    # Adiciona 0 às linhas restantes no channel2_quality
+    X5 = np.append(X5, np.zeros(max_linhas - qtd_linhas_channel2_quality))
+    
+if qtd_linhas_channel5_quality < max_linhas:
+    # Adiciona 0 às linhas restantes no channel5_quality
+    X6 = np.append(X6, np.zeros(max_linhas - qtd_linhas_channel5_quality))
+    
+if qtd_linhas_n_distant_devices < max_linhas:
+    # Adiciona 0 às linhas restantes no n_distant_devices
+    X7 = np.append(X7, np.zeros(max_linhas - qtd_linhas_n_distant_devices))
+
+# Determinar o resultado final com base nos valores de "abrir os"
+y = np.where((y1 == 1) | (y2 == 1) | (y3 == 1) | (y4 == 1) | (y5 == 1) | (y6 == 1) | (y7 ==1), 1, 0)  # caso uma das saídas sejam 1, o resultado será 1
+
+# Concatenar os conjuntos de dados lado a lado
+X = np.column_stack((X1, X2, X3, X4, X5, X6, X7))
+
+# Dividir os dados em 70% treinamento e 30% teste
+X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# Padronizar os dados de entrada
+scaler = StandardScaler()
+X_treino = scaler.fit_transform(X_treino)
+X_teste = scaler.transform(X_teste)
+
+# Criar o modelo de rede neural com 3 camadas densas e 1 de saída 
+model = Sequential() #camadas empilhadas em após a outra de forma sequencial
+model.add(Dense(100, input_dim=X_treino.shape[1], activation='relu')) #1ª camada densa ao modelo. Tem 100 neurônios e a dimensão de entrada (shape) é 1. Função de ativação relu
+model.add(Dense(100, activation='relu')) #2ª camada densa sao modelo. Tem 100 neurônios e a função de ativação relu (não linear que mapeia os valores de entrada para a saída). Dimensão de entrada inferida automaticamente com base na saída da camada anterior
+model.add(Dense(100, activation='relu')) #3ª camada, mesma coisa que a anterior
+model.add(Dense(1, activation='sigmoid')) #4ª camada, 1 neurônio já que a classificação é binária e função de ativação sigmoid (mapeia valores de entrada para uma saída entre 0 e 1)
+
+# Compilar o modelo
+model.compile(loss='binary_crossentropy', optimizer='adam', metrics=['accuracy'])
+#loss: função perda que mede o quão bem está indo o modelo. Binary_crossentropy: usada para classificação binária
+#optimizer: ajusta os pesos e o quão distante as previsões do modelo estão dos valores reais corretos com base nos dados de treinamento e da função perda. Adam: otimizador que combina o algoritmo de otimização estocástica de gradiente descendente (otimiza modelos de aprendizado de máquina com uma amostra aleatória) com momentos adaptativos (ajusta a taxa de aprendizado de cada parâmetro do modelo de forma adaptativa, levando em consideração o histórico dos gradientes calculados durante o treinamento).
+#metrics: lista de métricas utilizadas para avaliar o desempenho do modelo durante o treinamento e teste. Accuracy: precisão, calcula a proporção de instâncias corretamente classificadas em relação ao total.
+
+# Treinar o modelo
+model.fit(X_treino, y_treino, epochs=1000, batch_size=32, verbose=1)
+#batch_size: tamanho do lote de amostras usadas para atualizar os pesos do modelo
+#verbose: nivel de detalhamento das informações exibidas durante o treinamento. 1 = indica que o progresso do treinamento será mostrado.
+
+# Avaliar o desempenho do modelo nos dados de teste, obtendo a 'accuracy'
+precisao = model.evaluate(X_teste, y_teste)[1]
+
+# Fazer previsões nos dados de teste
+previsoes = model.predict(X_teste)
+resultado = [1 if p >= 0.5 else 0 for p in previsoes] #cada elemento é definido como 1 se a previsão correspondente for maior ou igual a 0.5, caso contrário, é definido como 0.
+
+# Criar um DataFrame com os dados de entrada e o resultado final
+dados_resultado = pd.DataFrame({'latencia': X_teste[:, 0],
+                               'jitter': X_teste[:, 1],
+                               'perda_de_pacote': X_teste[:, 2],
+                               'reboots': X_teste[:, 3],
+                               'channel2_quality': X_teste[:, 4],
+                               'channel5_quality': X_teste[:, 5],
+                               'n_distant_devices': X_teste[:, 6],
+                               'Resultado esperado': y_teste,
+                               'Abrir OS': resultado})
+
+# Salvar o DataFrame em um novo arquivo Excel
+dados_resultado.to_excel('resultadoDecisão+Sequential.xlsx', index=False)
+
+# Imprimir os resultados
+print('Precisão:', precisao * 100,'%')
+print('Resultado:', resultado)
+ 
