@@ -1,13 +1,16 @@
-import pandas as pd
-import numpy as np
+import pandas as pd #manipular e analisar dados
+import numpy as np #calculos numéricos
 from sklearn.neural_network import MLPClassifier
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split # Função para dividir um conjunto de dados em conjuntos de treinamento e teste.
 
 # Carregar os dados do arquivo Excel
 dados1 = pd.read_excel('teste.xlsx')  # primeiro conjunto de dados
 dados2 = pd.read_excel('teste.xlsx', sheet_name=1)  # segundo conjunto de dados
 dados3 = pd.read_excel('teste.xlsx', sheet_name=2)  # terceiro conjunto de dados
 dados4 = pd.read_excel('teste.xlsx', sheet_name=3)  # quarto conjunto de dados
+dados5 = pd.read_excel('teste.xlsx', sheet_name=4)  # quinto conjunto de dados
+dados6 = pd.read_excel('teste.xlsx', sheet_name=5)  # sexto conjunto de dados
+dados7 = pd.read_excel('teste.xlsx', sheet_name=6)  # sétimo conjunto de dados
 
 # as linhas com valores nulos ficam como 0 na coluna "latencia"
 dados1['latencia'] = dados1['latencia'].fillna(0)
@@ -18,9 +21,6 @@ y1 = dados1['abrir os']
 # Selecionar a coluna latência como entrada
 X1 = dados1['latencia']
 
-# Substituir os valores menores que 17 por 0 e os maiores ou iguais a 17 por 1
-X1 = np.where(X1 < 17, 0, 1)
-
 # as linhas com valores nulos ficam como 0 na coluna "jitter"
 dados2['jitter'] = dados2['jitter'].fillna(0)
 
@@ -30,17 +30,11 @@ y2 = dados2['abrir os']
 # Selecionar a coluna jitter como entrada
 X2 = dados2['jitter']
 
-# Substituir os valores menores que 5 por 0 e os maiores ou iguais a 5 por 1
-X2 = np.where(X2 < 5, 0, 1)
-
 # as linhas com valores nulos ficam como 0 na coluna "perda_de_pacote"
 dados3['perda_de_pacote'] = dados3['perda_de_pacote'].fillna(0)
 
-# Substituir ',' por '.' e '%' por '' na coluna "perda_de_pacote"
-dados3['perda_de_pacote'] = dados3['perda_de_pacote'].str.replace(',', '.').str.replace('%', '')
-
-# Substituir valores não numéricos por 0 na coluna "perda_de_pacote"
-dados3['perda_de_pacote'] = dados3['perda_de_pacote'].replace([np.inf, -np.inf, np.nan], 0)
+# Substituir '%' por '' na coluna "perda_de_pacote"
+dados3['perda_de_pacote'] = dados3['perda_de_pacote'].replace('%', '')
 
 # Converter a coluna para tipo numérico (float) antes de converter para inteiros
 dados3['perda_de_pacote'] = (dados3['perda_de_pacote'].astype(float) * 10000).astype(int)
@@ -51,9 +45,6 @@ y3 = dados3['abrir os']
 # Selecionar a coluna perda_de_pacote como entrada
 X3 = dados3['perda_de_pacote']
 
-# Substituir os valores menores que 3 por 0 e os maiores ou iguais a 3 por 1
-X3 = np.where(X3 < 3, 0, 1)
-
 # as linhas com valores nulos ficam como 0 na coluna "reboots"
 dados4['reboots'] = dados4['reboots'].fillna(0)
 
@@ -63,17 +54,44 @@ y4 = dados4['abrir os']
 # seleciona a coluna reboots como entrada
 X4 = dados4['reboots']
 
-# substitui os valores menores que 3 por 0 e os maiores ou iguais a 3 por 1
-X4 = np.where(X4 < 3, 0, 1)
+# as linhas com valores nulos ficam como 0 na coluna "channel2_quality"
+dados5['channel2_quality'] = dados5['channel2_quality'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y5 = dados5['abrir os']
+
+# seleciona a coluna channel2_quality como entrada
+X5 = dados5['channel2_quality']
+
+# as linhas com valores nulos ficam como 0 na coluna "channel5_quality"
+dados6['channel5_quality'] = dados6['channel5_quality'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y6 = dados6['abrir os']
+
+# seleciona a coluna channel5_quality como entrada
+X6 = dados6['channel5_quality']
+
+# as linhas com valores nulos ficam como 0 na coluna "n_distant_devices"
+dados7['n_distant_devices'] = dados7['n_distant_devices'].fillna(0)
+
+# seleciona a coluna 'Abrir OS'
+y7 = dados7['abrir os']
+
+# seleciona a coluna n_distant_devices como entrada
+X7 = dados7['n_distant_devices']
 
 # Obtém a quantidade de linhas em cada coluna
 qtd_linhas_latencia = X1.shape[0]
 qtd_linhas_jitter = X2.shape[0]
 qtd_linhas_perda_de_pacote = X3.shape[0]
 qtd_linhas_reboots = X4.shape[0]
+qtd_linhas_channel2_quality = X5.shape[0]
+qtd_linhas_channel5_quality = X6.shape[0]
+qtd_linhas_n_distant_devices = X7.shape[0]
 
 # Verifica se alguma coluna tem mais linhas que as outras
-max_linhas = max(qtd_linhas_latencia, qtd_linhas_jitter, qtd_linhas_perda_de_pacote, qtd_linhas_reboots)
+max_linhas = max(qtd_linhas_latencia, qtd_linhas_jitter, qtd_linhas_perda_de_pacote, qtd_linhas_reboots, qtd_linhas_channel2_quality, qtd_linhas_channel5_quality, qtd_linhas_n_distant_devices)
 
 if qtd_linhas_latencia < max_linhas:
     # Adiciona 0 às linhas restantes na latencia
@@ -88,19 +106,31 @@ if qtd_linhas_perda_de_pacote < max_linhas:
     X3 = np.append(X3, np.zeros(max_linhas - qtd_linhas_perda_de_pacote))
 
 if qtd_linhas_reboots < max_linhas:
-    # Adiciona 0 às linhas restantes na perda_de_pacote
+    # Adiciona 0 às linhas restantes no reboots
     X4 = np.append(X4, np.zeros(max_linhas - qtd_linhas_reboots))
+    
+if qtd_linhas_channel2_quality < max_linhas:
+    # Adiciona 0 às linhas restantes no channel2_quality
+    X5 = np.append(X5, np.zeros(max_linhas - qtd_linhas_channel2_quality))
+    
+if qtd_linhas_channel5_quality < max_linhas:
+    # Adiciona 0 às linhas restantes no channel5_quality
+    X6 = np.append(X6, np.zeros(max_linhas - qtd_linhas_channel5_quality))
+    
+if qtd_linhas_n_distant_devices < max_linhas:
+    # Adiciona 0 às linhas restantes no n_distant_devices
+    X7 = np.append(X7, np.zeros(max_linhas - qtd_linhas_n_distant_devices))
 
 # Determinar o resultado final com base nos valores de "abrir os"
-y = np.where((y1 == 1) | (y2 == 1) | (y3 == 1) | (y4 == 1), 1, 0)  # caso uma das saídas sejam 1, o resultado será 1
+y = np.where((y1 == 1) | (y2 == 1) | (y3 == 1) | (y4 == 1) | (y5 == 1) | (y6 == 1) | (y7 ==1), 1, 0)  # caso uma das saídas sejam 1, o resultado será 1
 
 # Concatenar os conjuntos de dados lado a lado
-X = np.column_stack((X1, X2, X3, X4))
+X = np.column_stack((X1, X2, X3, X4, X5, X6, X7))
 
 # Dividir os dados em 70% treinamento e 30% teste
 X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Criar o classificador MLP com 2 camadas ocultas de 10 neurônios cada e 10.000 iterações
+# Criar o classificador MLP com 2 camadas ocultas de 100 neurônios cada e 10.000 iterações
 clf = MLPClassifier(hidden_layer_sizes=(100, 100), random_state=42, max_iter=10000)
 
 # Treinar o classificador com os dados de treinamento
@@ -111,6 +141,20 @@ resultado = clf.predict(X_teste)
 
 # Calcular a precisão nos dados de teste
 precisao = clf.score(X_teste, y_teste)
+
+# Criar um DataFrame com os dados de entrada e o resultado final
+dados_resultado = pd.DataFrame({'latencia': X_teste[:, 0],
+                               'jitter': X_teste[:, 1],
+                               'perda_de_pacote': X_teste[:, 2],
+                               'reboots': X_teste[:, 3],
+                               'channel2_quality': X_teste[:, 4],
+                               'channel5_quality': X_teste[:, 5],
+                               'n_distant_devices': X_teste[:, 6],
+                                'Resultado esperado': y_teste,
+                               'Abrir OS': resultado})
+
+# Salvar o DataFrame em um novo arquivo Excel
+dados_resultado.to_excel('resultadoMLP.xlsx', index=False)
 
 # Imprimir os resultados
 print('Precisão:', precisao * 100, '%')
