@@ -1,6 +1,6 @@
 # Previsão de Abertura de OS (Ordem de Serviço) em Redes de Telecomunicações
 
-Este repositório contém dois modelos de aprendizado de máquina desenvolvidos para prever a necessidade de abertura de uma OS (Ordem de Serviço) com base em diversas métricas de qualidade de serviço em redes de telecomunicações. 
+Este repositório contém  modelos de aprendizado de máquina desenvolvidos para prever a necessidade de abertura de uma OS (Ordem de Serviço) com base em diversas métricas de qualidade de serviço em redes de telecomunicações. 
 
 As mértricas utilizadas são:
 - Latência
