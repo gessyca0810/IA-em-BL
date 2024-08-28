@@ -1,7 +1,15 @@
 # Previsão de Abertura de OS (Ordem de Serviço) em Redes de Telecomunicações
 
-Este repositório contém dois modelos de aprendizado de máquina desenvolvidos para prever a necessidade de abertura de uma OS (Ordem de Serviço) com base em diversas métricas de qualidade de serviço em redes de telecomunicações. Os modelos implementados são o **MLP (Multilayer Perceptron)** e o **Perceptron**.
+Este repositório contém dois modelos de aprendizado de máquina desenvolvidos para prever a necessidade de abertura de uma OS (Ordem de Serviço) com base em diversas métricas de qualidade de serviço em redes de telecomunicações. 
 
+As mértricas utilizadas são:
+- Latência
+- Jitter
+- Perda de Pacote
+- Reboots
+- Qualidade de Canal 2GHz
+- Qualidade de Canal 5GHz
+- Número de Dispositivos Distantes
 
 ## 1. `Arvore.py`
 
@@ -40,18 +48,31 @@ Este script combina uma Árvore de Decisão com um modelo de Rede Neural Sequenc
 5. O modelo é treinado por 1000 épocas com um tamanho de lote de 32.
 6. A precisão é avaliada e os resultados são salvos em um arquivo Excel.
 
-## 3. MLP (Multilayer Perceptron)
+## 3. Gradient Boosting
+
+**Descrição:**
+Gradient Boosting é uma técnica de aprendizado de máquina que combina várias árvores de decisão fracas para formar um modelo preditivo mais robusto. O modelo ajusta gradativamente as previsões, reduzindo os erros dos modelos anteriores.
+
+**Dependências:**
+- `pandas`
+- `numpy`
+- `scikit-learn`
+
+  ## 4. Long Short-Term Memory (LSTM)
+
+**Descrição:**
+LSTM é um tipo de rede neural recorrente (RNN) que pode aprender dependências de longo prazo em dados sequenciais. As células de memória em LSTM ajudam a capturar padrões ao longo de longos períodos de tempo.
+
+**Dependências:**
+- `pandas`
+- `numpy`
+- `scikit-learn`
+- `keras`
+
+## 5. MLP (Multilayer Perceptron)
 
 ### Descrição
-Este modelo utiliza o `MLPClassifier` da biblioteca `sklearn` para criar uma rede neural com duas camadas ocultas de 100 neurônios cada. O modelo prevê a necessidade de abrir uma OS com base em sete diferentes métricas:
-
-- Latência
-- Jitter
-- Perda de Pacote
-- Reboots
-- Qualidade de Canal 2GHz
-- Qualidade de Canal 5GHz
-- Número de Dispositivos Distantes
+Este modelo utiliza o `MLPClassifier` da biblioteca `sklearn` para criar uma rede neural com duas camadas ocultas de 100 neurônios cada. O modelo prevê a necessidade de abrir uma OS com base em sete diferentes métricas.
 
 ### Processamento
 - Substituição de valores nulos por 0.
@@ -62,7 +83,7 @@ Este modelo utiliza o `MLPClassifier` da biblioteca `sklearn` para criar uma red
 ### Resultados
 O classificador é treinado e testado, e a precisão do modelo é calculada e exibida ao final da execução. O modelo também gera um arquivo Excel (`resultadoMLP.xlsx`) contendo as predições feitas no conjunto de teste.
 
-## 4. Perceptron
+## 6. Perceptron
 
 ### Descrição
 Este modelo utiliza o `Perceptron`, uma versão mais simples de rede neural, para realizar a previsão de abertura de OS. Diferente do MLP, este modelo considera quatro métricas:
