@@ -86,12 +86,7 @@ O classificador é treinado e testado, e a precisão do modelo é calculada e ex
 ## 6. Perceptron
 
 ### Descrição
-Este modelo utiliza o `Perceptron`, uma versão mais simples de rede neural, para realizar a previsão de abertura de OS. Diferente do MLP, este modelo considera quatro métricas:
-
-- Latência
-- Jitter
-- Perda de Pacote
-- Reboots
+Este modelo utiliza o `Perceptron`, uma versão mais simples de rede neural, para realizar a previsão de abertura de OS.
 
 ### Processamento
 - Substituição de valores nulos por 0.
