@@ -15,8 +15,8 @@ dados7 = pd.read_excel('teste.xlsx', sheet_name=6)  # sétimo conjunto de dados
 # as linhas com valores nulos ficam como 0 na coluna "latencia"
 dados1['latencia'] = dados1['latencia'].fillna(0)
 
-# Selecionar a coluna 'Abrir OS' do primeiro conjunto de dados, para ser a saída
-y1 = dados1['abrir os']
+# Selecionar a coluna 'abriu os?' do primeiro conjunto de dados, para ser a saída
+y1 = dados1['abriu os?']
 
 # Selecionar a coluna latência como entrada
 X1 = dados1['latencia']
@@ -24,8 +24,8 @@ X1 = dados1['latencia']
 # as linhas com valores nulos ficam como 0 na coluna "jitter"
 dados2['jitter'] = dados2['jitter'].fillna(0)
 
-# Selecionar a coluna 'Abrir OS' do segundo conjunto de dados, para ser a saída
-y2 = dados2['abrir os']
+# Selecionar a coluna 'abriu os?' do segundo conjunto de dados, para ser a saída
+y2 = dados2['abriu os?']
 
 # Selecionar a coluna jitter como entrada
 X2 = dados2['jitter']
@@ -39,8 +39,8 @@ dados3['perda_de_pacote'] = dados3['perda_de_pacote'].replace('%', '')
 # Converter a coluna para tipo numérico (float) antes de converter para inteiros
 #dados3['perda_de_pacote'] = (dados3['perda_de_pacote'].astype(float) * 10000).astype(int)
 
-# Selecionar a coluna 'Abrir OS' do terceiro conjunto de dados, para ser a saída
-y3 = dados3['abrir os']
+# Selecionar a coluna 'abriu os?' do terceiro conjunto de dados, para ser a saída
+y3 = dados3['abriu os?']
 
 # Selecionar a coluna perda_de_pacote como entrada
 X3 = dados3['perda_de_pacote']
@@ -48,8 +48,8 @@ X3 = dados3['perda_de_pacote']
 # as linhas com valores nulos ficam como 0 na coluna "reboots"
 dados4['reboots'] = dados4['reboots'].fillna(0)
 
-# seleciona a coluna 'Abrir OS'
-y4 = dados4['abrir os']
+# seleciona a coluna 'abriu os?'
+y4 = dados4['abriu os?']
 
 # seleciona a coluna reboots como entrada
 X4 = dados4['reboots']
@@ -57,8 +57,8 @@ X4 = dados4['reboots']
 # as linhas com valores nulos ficam como 0 na coluna "channel2_quality"
 dados5['channel2_quality'] = dados5['channel2_quality'].fillna(0)
 
-# seleciona a coluna 'Abrir OS'
-y5 = dados5['abrir os']
+# seleciona a coluna 'abriu os?'
+y5 = dados5['abriu os?']
 
 # seleciona a coluna channel2_quality como entrada
 X5 = dados5['channel2_quality']
@@ -66,8 +66,8 @@ X5 = dados5['channel2_quality']
 # as linhas com valores nulos ficam como 0 na coluna "channel5_quality"
 dados6['channel5_quality'] = dados6['channel5_quality'].fillna(0)
 
-# seleciona a coluna 'Abrir OS'
-y6 = dados6['abrir os']
+# seleciona a coluna 'abriu os?'
+y6 = dados6['abriu os?']
 
 # seleciona a coluna channel5_quality como entrada
 X6 = dados6['channel5_quality']
@@ -75,8 +75,8 @@ X6 = dados6['channel5_quality']
 # as linhas com valores nulos ficam como 0 na coluna "n_distant_devices"
 dados7['n_distant_devices'] = dados7['n_distant_devices'].fillna(0)
 
-# seleciona a coluna 'Abrir OS'
-y7 = dados7['abrir os']
+# seleciona a coluna 'abriu os?'
+y7 = dados7['abriu os?']
 
 # seleciona a coluna n_distant_devices como entrada
 X7 = dados7['n_distant_devices']
@@ -121,7 +121,7 @@ if qtd_linhas_n_distant_devices < max_linhas:
     # Adiciona 0 às linhas restantes no n_distant_devices
     X7 = np.append(X7, np.zeros(max_linhas - qtd_linhas_n_distant_devices))
 
-# Determinar o resultado final com base nos valores de "abrir os"
+# Determinar o resultado final com base nos valores de "abriu os?"
 y = np.where((y1 == 1) | (y2 == 1) | (y3 == 1) | (y4 == 1) | (y5 == 1) | (y6 == 1) | (y7 ==1), 1, 0)  # caso uma das saídas sejam 1, o resultado será 1
 
 # Concatenar os conjuntos de dados lado a lado
@@ -151,7 +151,7 @@ dados_resultado = pd.DataFrame({'latencia': X_teste[:, 0],
                                'channel5_quality': X_teste[:, 5],
                                'n_distant_devices': X_teste[:, 6],
                                 'Resultado esperado': y_teste,
-                               'Abrir OS': resultado})
+                               'abriu os?': resultado})
 
 # Salvar o DataFrame em um novo arquivo Excel
 dados_resultado.to_excel('resultadoGradientBoosting.xlsx', index=False)
